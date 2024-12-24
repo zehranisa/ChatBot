@@ -10,10 +10,6 @@ public class ElectronicsProduct extends Product {
         return screenSize;
     }
 
-    public void setScreenSize(String screenSize) {
-        this.screenSize = screenSize;
-    }
-
     @Override
     public String productInfo() {
         return super.productInfo() + ", Screen Size: " + screenSize;

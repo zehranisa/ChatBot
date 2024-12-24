@@ -19,6 +19,10 @@ public class Product {
         return stock;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
     public double getDiscountedPrice() {
         return price * (1 - discountRate / 100.0);
     }

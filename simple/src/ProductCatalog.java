@@ -17,25 +17,9 @@ public class ProductCatalog {
     }
 
     public Product findProductByName(String name) {
-        name = name.toLowerCase().trim();
-
         for (Product product : products) {
-            if (product.getName().toLowerCase().contains(name)) {
+            if (product.getName().equalsIgnoreCase(name)) {
                 return product;
-            }
-        }
-        return null;
-    }
-
-    public Product findProductByColor(String color) {
-        color = color.toLowerCase().trim();
-
-        for (Product product : products) {
-            if (product instanceof AccessoryProduct) {
-                AccessoryProduct accessoryProduct = (AccessoryProduct) product;
-                if (accessoryProduct.getColor().toLowerCase().equals(color)) {
-                    return accessoryProduct;
-                }
             }
         }
         return null;

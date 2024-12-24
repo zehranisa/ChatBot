@@ -19,14 +19,15 @@ public class ChatBot {
             String question = scanner.nextLine().toLowerCase();
 
             if (question.contains("what products")) {
-                listProducts();
-                askForEmail(scanner);
+                listProductNames();
             } else if (question.contains("price")) {
                 askForProductPrice(scanner);
             } else if (question.contains("stock")) {
                 askForProductStock(scanner);
             } else if (question.contains("color")) {
                 askForProductColor(scanner);
+            } else if (question.contains("screen size")) {
+                askForProductScreenSize(scanner);
             } else if (question.contains("exit")) {
                 System.out.println("Exiting...");
                 break;
@@ -37,35 +38,22 @@ public class ChatBot {
         scanner.close();
     }
 
-    private void listProducts() {
+    private void listProductNames() {
         System.out.println("Available Products: ");
         for (Product product : catalog.getProducts()) {
-            System.out.println(product.productInfo());
-        }
-    }
-
-    private void showDiscountedPrices() {
-        if (isEmailVerified) {
-            System.out.println("Discounted Prices: ");
-            for (Product product : catalog.getProducts()) {
-                System.out.println(product.productInfo());
-            }
-        } else {
-            System.out.println("To view discounted prices, you need to verify your email address.");
-            askForEmail(new Scanner(System.in));
+            System.out.println("- " + product.getName());
         }
     }
 
     private void askForEmail(Scanner scanner) {
         if (!isEmailVerified) {
-            System.out.println("Please enter your email address:");
+            System.out.println("Please enter your email address to view discounted prices:");
             String email = scanner.nextLine();
             if (isValidEmail(email)) {
                 isEmailVerified = true;
                 System.out.println("Email verified!");
-                showDiscountedPrices();
             } else {
-                System.out.println("Invalid email address.");
+                System.out.println("Invalid email address. Please try again.");
                 askForEmail(scanner);
             }
         }
@@ -80,7 +68,8 @@ public class ChatBot {
         System.out.println("1. 'Product Price' - To learn the price of a product");
         System.out.println("2. 'Stock Information' - To learn the stock status of a product");
         System.out.println("3. 'Color' - To learn the color information of a product");
-        System.out.println("4. 'Available Products' - To list all available products");
+        System.out.println("4. 'Screen Size' - To learn the screen size of a product");
+        System.out.println("5. 'Available Products' - To list all available products");
     }
 
     private void askForProductPrice(Scanner scanner) {
@@ -89,7 +78,12 @@ public class ChatBot {
         Product product = catalog.findProductByName(productName);
 
         if (product != null) {
-            System.out.println(product.productInfo());
+            if (!isEmailVerified) {
+                System.out.println("To view the discounted price, please provide your email address.");
+                askForEmail(scanner);
+            }
+            System.out.println("Price: " + product.getPrice() + " TL");
+            System.out.println("Discounted Price: " + product.getDiscountedPrice() + " TL");
         } else {
             System.out.println("Product not found.");
         }
@@ -120,11 +114,25 @@ public class ChatBot {
         }
     }
 
+    private void askForProductScreenSize(Scanner scanner) {
+        System.out.print("Which product's screen size would you like to know? ");
+        String productName = scanner.nextLine();
+        Product product = catalog.findProductByName(productName);
+
+        if (product != null && product instanceof ElectronicsProduct) {
+            ElectronicsProduct electronicsProduct = (ElectronicsProduct) product;
+            System.out.println("The screen size of " + electronicsProduct.getName() + " is " + electronicsProduct.getScreenSize() + ".");
+        } else {
+            System.out.println("Product not found or the product doesn't have screen size information.");
+        }
+    }
+
     public static void main(String[] args) {
         ProductCatalog catalog = new ProductCatalog();
         catalog.addProduct(new Product("Laptop", 5000, 20, 10));
         catalog.addProduct(new Product("Phone", 3000, 15, 5));
         catalog.addProduct(new AccessoryProduct("Headphones", 500, 30, "White", 0));
+        catalog.addProduct(new ElectronicsProduct("TV", 15000, 10, "55 inch", 15));
 
         ChatBot chatBot = new ChatBot(catalog);
         chatBot.startInteraction();
